@@ -16,6 +16,8 @@ info.onAdd = function (map) {
 // method that we will use to update the control based on feature properties passed
 info.update = function (props) {
   if (props) {
+    props.name = props.vote["選區"][0] + "第";
+    props.name += ((props.vote["選區"][1])? props.vote["選區"][1] : 1) + "選區" ;
     var winner = getWinner(props.vote, ['小記', '總計']);
     this._div.innerHTML = '<h4>立委選區資訊</h4>' +
     '<b>' + props.name + '</b><br />' +
@@ -208,10 +210,10 @@ $.getJSON('json/counties.json').then(function(data) {
   var count = 0;
   $.each(data, function(i, area) {
     $.when(
-      $.getJSON('json/twVote1982/' + area + '.json'),
+      $.getJSON('json/twVote1982/' + area + '.topo.json'),
       $.getJSON('json/mly/8/' + area + '.json')
     ).then(function(voteResult, mlyResult) {
-      var voteInfo = voteResult[0];
+      var voteInfo = topojson.feature(voteResult[0], voteResult[0].objects[area]);
       var mly = mlyResult[0];
 
       voteInfo.features[0].properties.vote = mly;
